@@ -45,9 +45,28 @@ describe EventCalendar do
 
   it '#events_in by day' do
     cal = EventCalendar.new 'spec/testcal.ics'
-    events = cal.events_in(Date.new(2014, 07, 27), Date.new(2014, 07, 28))
+    events = cal.events_in(Date.new(2014, 7, 27), Date.new(2014, 7, 28))
     event_names = events.map(&:summary)
     expect(event_names).to eq ["allday", "onehour", "daily", "allday", "daily"]
     expect(event_names.class).to eq({}.class)
+  end
+
+  describe "Event" do
+    describe "#start_time_f" do
+      it "returns the time if given day is start day" do
+        cal = EventCalendar.new 'spec/testcal.ics'
+        events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
+        expect(Event.new(events[0]).start_time_f Date.new(2014, 8, 27)).to eq "12:00"
+        expect(Event.new(events[0]).start_time_f Date.new(2014, 8, 28)).to eq ""
+      end
+    end
+    describe "#finish_time_f" do
+      it "returns the time if given day is end day" do
+        cal = EventCalendar.new 'spec/testcal.ics'
+        events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
+        expect(Event.new(events[0]).finish_time_f Date.new(2014, 8, 27)).to eq ""
+        expect(Event.new(events[0]).finish_time_f Date.new(2014, 8, 28)).to eq "13:00"
+      end
+    end
   end
 end

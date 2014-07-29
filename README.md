@@ -1,6 +1,6 @@
 # Kalindar
 
-TODO: Write a gem description
+Kalindar lets you view ics files via a webbrowser.
 
 ## Installation
 
@@ -18,7 +18,12 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+bundle exec rackup
+
+### Configuration
+
+Configuration is done in config.json .  There one or many calendar (ics) files
+can be set.
 
 ## Contributing
 

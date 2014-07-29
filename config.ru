@@ -1,0 +1,2 @@
+require 'kalindar'
+run KalindarApp

@@ -1,0 +1,34 @@
+ul.day_list {
+  list-style: none;
+  border-top: solid 1px;
+  border-left: solid 1px;
+  background-color: #EEEEEE;
+}
+
+li.day {
+  border-top: solid 1px;
+  border-left: solid 1px;
+  background-color: #EEEEEE;
+}
+
+li.saturday {
+  border-top: solid 1px;
+  border-left: solid 1px;
+  background-color: #DADAEE;
+}
+
+li.sunday {
+  border-top: solid 1px;
+  border-left: solid 1px;
+  background-color: #BBBBEE;
+}
+
+ul.event_list {
+  list-style: none;
+  border-top: solid 1px;
+  background-color: #FEFEFE;
+}
+
+ul.event_list li {
+  border-bottom: solid 1px;
+}

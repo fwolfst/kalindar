@@ -1,0 +1,13 @@
+%form(action="/event" method="post")
+  %input(type="hidden" name="_method" value="put")
+  %label(for="start")
+    Start Date/Time
+  %input(type="text" name="start" value="20140801")
+  %label(for="start")
+    End Date/Time
+  %input(type="text" name="end" value="20140803")
+  %label(for="start")
+    Summary
+  %input(type="text" name="summary")
+  %button(type="submit" value="save")
+    save

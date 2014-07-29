@@ -1,33 +1,65 @@
-require 'icalendar'
+require 'ri_cal'
 
 class EventCalendar
-  attr_accessor :calendar
+  attr_accessor :calendars
+  attr_accessor :filenames # decorator?
+  # also decoreate event for access to calendar?
 
   def initialize filename
-    read_file filename
+    @calendars = []
+    @filenames = []
+    if filename.class == Array
+      filename.each {|file| read_file file}
+    else
+      read_file filename
+    end
   end
 
   def read_file filename
-    @calendar = Icalendar.parse(File.read filename).first
+    @calendars << File.open(filename, 'r') do |file|
+      RiCal.parse file
+    end.flatten
+    # attention if more than one calendar in file!
+    @filenames << filename
+    @calendars.flatten!
   end
 
   # Catches only certain events
   def singular_events_for_month year, month
-    @calendar.events.select { |event|
-      event_between? event, dtmonth_start(year, month), dtmonth_end(year, month)
-    }
+    @calendar.map do |calendar|
+      calendar.events.select { |event|
+        event_between? event, dtmonth_start(year, month), dtmonth_end(year, month)
+      }
+    end.flatten
   end
 
-  def events_for date
-    @calendar.events.select { |event|
-      event_includes? event, date
-    }
+  def events_for_date date
+    @calendars.map do |calendar|
+      calendar .events.select { |event|
+        event_includes? event, date
+      }
+    end.flatten
+  end
+
+  # Best optimization potential
+  def events_in start_date, end_date
+    events = []
+    (start_date .. end_date).each do |day|
+      events << find_events(day)
+    end
+    events.flatten
   end
 
   def find_events date
-    @calendar.events.select { |event|
-      event.dtstart.to_date == date || event.dtend.to_date == date
-    }
+    @calendars.map do |calendar|
+      calendar.events.select { |event|
+        event.dtstart.to_date == date || event.dtend.to_date == date ||!event.occurrences(:overlapping => [date, date +1]).empty?
+      }
+    end.flatten
+  end
+
+  def filename_of calendar
+    @filenames[@calendars.index calendar]
   end
 
   private

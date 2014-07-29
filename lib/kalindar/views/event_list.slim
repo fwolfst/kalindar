@@ -1,0 +1,14 @@
+ul.hlist
+  - @events.each do |day, evs|
+    li
+      | #{day.strftime("%Y %m %d")}
+      ul
+        - evs.each do |ev|
+          li
+            =ev.start_time.strftime('%H:%M')
+            =ev.finish_time.strftime('%H:%M')
+            =ev.summary
+      form action="/event/new/#{day.strftime('%Y%m%d')}"
+        button type="submit" value="new"
+          | (new)
+

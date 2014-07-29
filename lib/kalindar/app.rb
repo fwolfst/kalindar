@@ -1,5 +1,5 @@
 require 'sinatra/base'
-require 'haml'
+require 'slim'
 require 'time'
 require 'json'
 
@@ -9,6 +9,9 @@ class KalindarApp < Sinatra::Base
 
   # Will use http-verb PUT
   enable :method_override
+
+  # We like pretty html indentation
+  set :slim, :pretty => true
 
   get '/' do
     redirect '/events'
@@ -22,7 +25,7 @@ class KalindarApp < Sinatra::Base
       @events[day] = $cal.find_events day.to_date
       puts "#{day}: #{($cal.find_events day).length}"
     end
-    haml :event_list
+    slim :event_list
   end
 
   put '/event' do
@@ -40,6 +43,6 @@ class KalindarApp < Sinatra::Base
 
 
   get '/event/new/:day' do
-    haml :new_event
+    slim :new_event
   end
 end

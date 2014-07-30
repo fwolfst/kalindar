@@ -2,10 +2,19 @@ require 'sinatra/base'
 require 'slim'
 require 'time'
 require 'json'
+require 'i18n'
+require 'i18n/backend/fallbacks'
 
 class KalindarApp < Sinatra::Base
   $conf = JSON.load(File.new('config.json'))
-  $cal = EventCalendar.new($conf['calendar_file'])
+  $cal = EventCalendar.new($conf['calendar_files'])
+
+  configure do
+    I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
+    I18n.load_path = Dir[File.join(settings.root, 'locales', '*.yml')]
+    I18n.backend.load_translations
+    I18n.default_locale = $conf['locale'].to_sym
+  end
 
   # Will use http-verb PUT
   enable :method_override

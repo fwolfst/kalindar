@@ -1,3 +1,5 @@
+require 'delegate'
+
 # Delegator with some handy shortcuts
 class Event < SimpleDelegator
   def start_time_f day

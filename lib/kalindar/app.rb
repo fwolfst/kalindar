@@ -46,13 +46,11 @@ class KalindarApp < Sinatra::Base
     (DateTime.now .. DateTime.now + 30).each do |day|
       #@events[d] = $cal.events_for(d)
       @events[day] = $cal.find_events day.to_date
-      puts "#{day}: #{($cal.find_events day).length}"
     end
     slim :event_list
   end
 
   put '/event' do
-    # alternatively RiCal.Event ?
     event = RiCal::Component::Event.new($cal.calendars.first)
     event.dtstart = Date.parse(params['start'])
     event.dtend = Date.parse(params['end'])
@@ -61,8 +59,6 @@ class KalindarApp < Sinatra::Base
     io = File.open($cal.filename_of($cal.calendars.first), 'w')
     $cal.calendars.first.export_to io
     io.close
-    "save"
-  end
 
 
   get '/event/new/:day' do

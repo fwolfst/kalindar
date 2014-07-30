@@ -22,6 +22,20 @@ class KalindarApp < Sinatra::Base
   # We like pretty html indentation
   set :slim, :pretty => true
 
+  helpers do
+    def li_day_class day
+      return "sunday" if day.sunday?
+      return "saturday" if day.saturday?
+      "day"
+    end
+    def t(*args)
+      I18n.t(*args)
+    end
+    def l(*args)
+      I18n.l(*args)
+    end
+  end
+
   get '/' do
     redirect '/events'
   end

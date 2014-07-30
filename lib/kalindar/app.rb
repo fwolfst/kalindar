@@ -78,6 +78,7 @@ class KalindarApp < Sinatra::Base
   # Add event, save ics file.
   put '/event' do
     event = RiCal::Component::Event.new($cal.calendars.first)
+    event.uid = SecureRandom.uuid
     start_time = start_time_from_params params
     event.dtstart = start_time
     event.dtend = end_time_from_params params, start_time

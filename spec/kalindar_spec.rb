@@ -51,14 +51,20 @@ describe EventCalendar do
     expect(event_names.class).to eq({}.class)
   end
 
-  describe "Event" do
-    describe "#start_time_f" do
-      it "returns the time if given day is start day" do
-        cal = EventCalendar.new 'spec/testcal.ics'
-        events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
-        expect(Event.new(events[0]).start_time_f Date.new(2014, 8, 27)).to eq "12:00"
-        expect(Event.new(events[0]).start_time_f Date.new(2014, 8, 28)).to eq ""
-      end
+  it "#find_by_uid" do
+    cal = EventCalendar.new 'spec/testcal.ics'
+    event = cal.find_by_uid 'cb523dc2-eab8-49c9-a99f-ed69ac3b65d0'
+    expect(event.summary).to eq 'allday'
+  end
+end
+
+describe "Event" do
+  describe "#start_time_f" do
+    it "returns the time if given day is start day" do
+      cal = EventCalendar.new 'spec/testcal.ics'
+      events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
+      expect(Event.new(events[0]).start_time_f Date.new(2014, 8, 27)).to eq "12:00"
+      expect(Event.new(events[0]).start_time_f Date.new(2014, 8, 28)).to eq ""
     end
     describe "#finish_time_f" do
       it "returns the time if given day is end day" do

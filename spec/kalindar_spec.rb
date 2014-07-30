@@ -18,7 +18,7 @@ describe EventCalendar do
 
   it 'exposes filename of parsed calendar' do
     cal = EventCalendar.new ['spec/testcal.ics', 'spec/testcal2.ics']
-    expect(cal.filename_of cal.calendars.first).to eql 'spec/testcal.ics'
+    expect(cal.calendars.first.filename).to eql 'spec/testcal.ics'
   end
 
   it 'finds events given date' do

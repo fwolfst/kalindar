@@ -97,4 +97,8 @@ class KalindarApp < Sinatra::Base
   get '/event/new/:day' do
     slim :new_event, :locals => {'start_date' => nil}
   end
+
+  get '/event/edit/:uuid' do
+    slim :edit_event, :locals => {'event' => $cal.calendars.first.events[0]}
+  end
 end

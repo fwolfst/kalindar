@@ -2,7 +2,11 @@ ul.day_list {
   list-style: none;
   border-top: solid 1px;
   border-left: solid 1px;
-  background-color: #EEEEEE;
+  border-right: solid 1px;
+  background-color: #FEEEFE;
+  padding-left: 0em;
+  margin-left: 0.3em;
+  width: 18em;
 }
 
 li.day {
@@ -26,9 +30,41 @@ li.sunday {
 ul.event_list {
   list-style: none;
   border-top: solid 1px;
+  border-bottom: solid 1px;
   background-color: #FEFEFE;
+  margin-left: 0.5em;
+  padding-left: 0.5em;
+  padding-right: 0em;
+  padding-top: 0em;
+  padding-bottom: 0em;
 }
 
 ul.event_list li {
   border-bottom: solid 1px;
+  margin-left: 0.1em;
+  clear: both;
+}
+
+#event {
+  margin-left: 0.4em;
+}
+
+#time {
+  float: left;
+  width: 6.8em;
+}
+
+#summary {
+  font-weight: bold;
+}
+
+.hidden_new_event_mask {
+  display: none;
+  margin: 1em;
+}
+
+#hidden_description {
+  display: none;
+  margin-left: 0.5em;
+  font-size: 80%;
 }

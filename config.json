@@ -1,0 +1,12 @@
+{
+  // Configuration file for kalindar - web frontend to view ics files.
+  // In JSON format.
+
+  // Specify one or more ics files.
+  // You can skip the list (['one.ics', 'two.ics']) syntax for single ones.
+  // The first calender is the one to be edited.
+  "calendar_files": "kalindar.ics",
+
+  // Specify the locale (currently 'de' or 'en').
+  "locale": "de"
+}

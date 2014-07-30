@@ -1,0 +1,35 @@
+form.pure-form.pure-form-stacked action="/event" method="post"
+  input type="hidden" name="_method" value="put"
+  input type="hidden" name="uid" value=event.uid
+  fieldset
+    legend = t 'edit_event'
+
+    label for="start_day" = t 'start_date'
+    input type="text" readonly=true name="start_day" value="#{event.start_time}" 
+
+    label for="start_time" = t 'when'
+    input type="text" name="start_time" placeholder="HH:MM" value=event.start_time
+
+    label for="start" = t 'summary'
+    input type="text" name="summary" placeholder="summary" value=event.summary
+
+    label for="location" = t 'location'
+    input type="text" name="location" placeholder="place" value=event.location
+
+    label for="description" = t 'description'
+    textarea name="description" rows=3 width=40
+      = event.description
+
+    label for="duration" = t 'duration'
+    select name="duration"
+      option value="15m"   = t '15m'
+      option value="30m"   = t '30m'
+      option value="60m"   = t '60m'
+      option value="90m"   = t '90m'
+      option value="120m"  = t '120m'
+      option value="whole" = t 'whole_day'
+      option value="1d"    = t '1d'
+      option value="2d"    = t '2d'
+      option value="5d"    = t '5d'
+      option value="1w"    = t '1w'
+    button.pure-button type="submit" value="save" = t 'save'

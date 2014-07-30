@@ -89,9 +89,7 @@ class KalindarApp < Sinatra::Base
 
     # Motivate Calendar Delegate
     $cal.calendars.first.events << event
-    io = File.open($cal.filename_of($cal.calendars.first), 'w')
-    $cal.calendars.first.export_to io
-    io.close
+    $cal.calendars.first.write_back!
 
     redirect back
   end

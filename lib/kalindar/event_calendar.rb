@@ -1,13 +1,11 @@
 require 'ri_cal'
+require 'kalindar/calendar'
 
 class EventCalendar
   attr_accessor :calendars
-  attr_accessor :filenames # decorator?
-  # also decoreate event for access to calendar?
 
   def initialize filename
     @calendars = []
-    @filenames = []
     if filename.class == Array
       filename.each {|file| read_file file}
     else
@@ -18,9 +16,11 @@ class EventCalendar
   def read_file filename
     @calendars << File.open(filename, 'r') do |file|
       RiCal.parse file
-    end.flatten
-    # attention if more than one calendar in file!
-    @filenames << filename
+    end.flatten.map do |calendar|
+      c = Calendar.new calendar
+      c.filename = filename
+      c
+    end
     @calendars.flatten!
   end
 
@@ -68,10 +68,6 @@ class EventCalendar
     end.flatten.map do |event|
       Event.new event
     end
-  end
-
-  def filename_of calendar
-    @filenames[@calendars.index calendar]
   end
 
   private

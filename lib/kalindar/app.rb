@@ -1,7 +1,8 @@
-require 'sinatra/base'
-require 'slim'
 require 'time'
 require 'json'
+require 'securerandom'
+require 'sinatra/base'
+require 'slim'
 require 'i18n'
 require 'i18n/backend/fallbacks'
 

@@ -1,9 +1,37 @@
-form(action="/event" method="post")
-  input(type="hidden" name="_method" value="put")
-  label(for="start") Start Date/Time
-  input(type="text" name="start" value="20140801")
-  label(for="start") End Date/Time
-  input(type="text" name="end" value="20140803")
-  label(for="start") Summary
-  input(type="text" name="summary")
-  button(type="submit" value="save") save
+form.pure-form.pure-form-stacked action="/event" method="post"
+  input type="hidden" name="_method" value="put"
+  fieldset
+    legend = t 'new_event'
+
+    - if !start_date.nil?
+      label for="start_day" = t 'start_date'
+      input type="text" readonly=true name="start_day" value="#{start_date}" 
+    - else
+      label for="start_day" = t 'start_date'
+      input type="text" name="start_day" value="" placeholder="YYYYMMDD")
+  
+    label for="start_time" = t 'when'
+    input type="text" name="start_time" value="" placeholder="HH:MM"
+
+    label for="start" = t 'summary'
+    input type="text" name="summary" placeholder="summary"
+
+    label for="location" = t 'location'
+    input type="text" name="location" placeholder="place"
+
+    label for="description" = t 'description'
+    textarea name="description" rows=3 width=40
+
+    label for="duration" = t 'duration'
+    select name="duration"
+      option value="15m"   = t '15m'
+      option value="30m"   = t '30m'
+      option value="60m"   = t '60m'
+      option value="90m"   = t '90m'
+      option value="120m"  = t '120m'
+      option value="whole" = t 'whole_day'
+      option value="1d"    = t '1d'
+      option value="2d"    = t '2d'
+      option value="5d"    = t '5d'
+      option value="1w"    = t '1w'
+    button.pure-button type="submit" value="save" = t 'save'

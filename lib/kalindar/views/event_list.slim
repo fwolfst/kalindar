@@ -1,14 +1,23 @@
-ul.hlist
+ul.day_list
   - @events.each do |day, evs|
-    li
-      | #{day.strftime("%Y %m %d")}
-      ul
+    li class=li_day_class(day)
+      center
+        | #{l day, :format => :short}
+        br
+        a#new_event_link href="/event/new/#{day.strftime('%Y%m%d')}" #{t 'create_event'}
+      .hidden_new_event_mask
+        == slim :new_event, :layout => false, :locals => {'start_date' => day.strftime("%Y%m%d")}
+      ul.event_list
         - evs.each do |ev|
-          li
-            =ev.start_time.strftime('%H:%M')
-            =ev.finish_time.strftime('%H:%M')
-            =ev.summary
-      form action="/event/new/#{day.strftime('%Y%m%d')}"
-        button type="submit" value="new"
-          | (new)
-
+          li#event_day
+            #event
+              #time
+                | #{ev.time_f day}
+              #summary
+                | #{ev.summary}
+              - if ev.location
+                | [#{ev.location}]
+              #hidden_description
+                | (#{ev.from_to_f})
+                br
+                | #{ev.description}

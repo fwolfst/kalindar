@@ -68,5 +68,19 @@ describe EventCalendar do
         expect(Event.new(events[0]).finish_time_f Date.new(2014, 8, 28)).to eq "13:00"
       end
     end
+    describe "#time_f" do
+      it "returns the from to time for given day" do
+        cal = EventCalendar.new 'spec/testcal.ics'
+        events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
+        expect(Event.new(events[0]).time_f Date.new(2014, 8, 27)).to eq "12:00 - "
+      end
+    end
+    describe "#time_f" do
+      it "returns the from to time" do
+        cal = EventCalendar.new 'spec/testcal.ics'
+        events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
+        expect(Event.new(events[0]).from_to_f).to eq "27.08. 12:00 - 28.08. 13:00"
+      end
+    end
   end
 end

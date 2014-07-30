@@ -34,11 +34,20 @@ class EventCalendar
   end
 
   def events_for_date date
-    @calendars.map do |calendar|
-      calendar .events.select { |event|
-        event_includes? event, date
-      }
-    end.flatten
+    events = @calendars.map &:events
+    events.select {|event| event_includes? event, date}.flatten
+    events.map {|event|
+      Event.new event
+    }
+  end
+
+  # Nother optimization potential
+  def events_per_day start_date, end_date
+    map = {}
+    (start_date .. end_date).each do |day|
+      (map[day] ||= []) << find_events(day)
+    end
+    map
   end
 
   # Best optimization potential
@@ -51,11 +60,14 @@ class EventCalendar
   end
 
   def find_events date
+    #events = @calendars.map &:events
     @calendars.map do |calendar|
       calendar.events.select { |event|
         event.dtstart.to_date == date || event.dtend.to_date == date ||!event.occurrences(:overlapping => [date, date +1]).empty?
       }
-    end.flatten
+    end.flatten.map do |event|
+      Event.new event
+    end
   end
 
   def filename_of calendar

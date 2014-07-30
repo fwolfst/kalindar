@@ -1,6 +1,8 @@
 de:
   create_event: "Neuer Termin"
   new_event:    "Neuer Termin"
+  edit:         "ändern"
+  edit_event:   "Termin ändern"
   start_date:   "Anfangsdatum"
   when:         "Uhrzeit"
   summary:      "Titel"

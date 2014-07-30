@@ -1,6 +1,8 @@
 en:
   create_event: "New Event"
   new_event:    "New Event"
+  edit:         "edit"
+  edit_event:   "edit event"
   start_date:   "Start Date"
   when:         "Time"
   summary:      "Summary"

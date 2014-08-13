@@ -7,13 +7,16 @@ describe Kalindar do
 end
 
 describe EventCalendar do
-  it 'parses an ics file' do
-    cal = EventCalendar.new 'spec/testcal.ics'
-  end
+  subject { EventCalendar.new 'spec/testcal.ics' }
 
-  it 'initializes alternatively with a list of ics files' do
-    cal = EventCalendar.new ['spec/testcal.ics', 'spec/testcal2.ics']
-    expect(cal.calendars.length).to eql 2
+  describe "#new" do
+    it 'parses an ics file' do
+      cal = EventCalendar.new 'spec/testcal.ics'
+    end
+    it 'initializes alternatively with a list of ics files' do
+      cal = EventCalendar.new ['spec/testcal.ics', 'spec/testcal2.ics']
+      expect(cal.calendars.length).to eql 2
+    end
   end
 
   it 'exposes filename of parsed calendar' do
@@ -21,34 +24,51 @@ describe EventCalendar do
     expect(cal.calendars.first.filename).to eql 'spec/testcal.ics'
   end
 
-  it 'finds events given date' do
-    cal = EventCalendar.new 'spec/testcal.ics'
-    events = cal.find_events (Date.new(2014, 07, 27))
-    event_names = events.map(&:summary)
-    expect(event_names.include? "onehour").to eq true
-    expect(event_names.include? "allday").to eq true
+  describe "#find_events" do
+    it 'finds events given date' do
+      events = subject.find_events (Date.new(2014, 07, 27))
+      event_names = events.map(&:summary)
+      expect(event_names.include? "onehour").to eq true
+      expect(event_names.include? "allday").to eq true
+    end
+    it 'handles whole day endtime correctly' do
+      events = subject.find_events (Date.new(2014, 07, 28))
+      event_names = events.map(&:summary)
+      expect(event_names.include? "allday").to eq false
+    end
+    it 'wraps events as Event delegates' do
+      events = subject.find_events (Date.new(2014, 07, 27))
+      events.each do |event|
+        expect(event.is_a? Event).to eq true
+      end
+    end
   end
 
   it 'finds events that reocur' do
-    cal = EventCalendar.new 'spec/testcal.ics'
-    events = cal.find_events (Date.new(2014, 07, 27))
+    events = subject.find_events (Date.new(2014, 07, 27))
     event_names = events.map(&:summary)
     expect(event_names.include? "daily").to eq true
   end
 
-  it '#events_in' do
-    cal = EventCalendar.new 'spec/testcal.ics'
-    events = cal.events_in(Date.new(2014, 07, 27), Date.new(2014, 07, 28))
-    event_names = events.map(&:summary)
-    expect(event_names).to eq ["allday", "onehour", "daily", "allday", "daily"]
+  describe "#events_in" do
+    it 'accesses events between two dates' do
+      events = subject.events_in(Date.new(2014, 07, 27), Date.new(2014, 07, 28))
+      event_names = events.map(&:summary)
+      expect(event_names).to eq ["allday", "onehour", "daily", "daily"]
+    end
   end
 
-  it '#events_in by day' do
-    cal = EventCalendar.new 'spec/testcal.ics'
-    events = cal.events_in(Date.new(2014, 7, 27), Date.new(2014, 7, 28))
-    event_names = events.map(&:summary)
-    expect(event_names).to eq ["allday", "onehour", "daily", "allday", "daily"]
-    expect(event_names.class).to eq({}.class)
+  describe "#events_in" do
+    it '#events_in by day' do
+      events = subject.events_in(Date.new(2014, 7, 27), Date.new(2014, 7, 28))
+      event_names = events.map(&:summary)
+      expect(event_names).to eq ["allday", "onehour", "daily", "allday", "daily"]
+      expect(event_names.class).to eq({}.class)
+    end
+    it 'wraps in Event Delegate' do
+      events = subject.events_in(Date.new(2014, 7, 27), Date.new(2014, 7, 28))
+      expect(events.collect{|e| e.is_a? Event}.length).to eq events.length
+    end
   end
 
   it "#find_by_uid" do

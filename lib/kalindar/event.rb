@@ -44,46 +44,94 @@ class Event < SimpleDelegator
     return "#{dtstart.to_datetime.strftime("%d.%m. %H:%M")} - #{dtend.to_datetime.strftime("%d.%m. %H:%M")}"
   end
 
+  # Create DateTime from yyyymmdd + h + m .
+  def self.start_time_from_params params
+    start_day = Date.parse(params['start_day'])
+    if !params[:start_time]
+      return start_day
+    end
+
+    hour, minute = params[:start_time].match(/(\d\d):(\d\d)/)[1,2]
+    start_time = DateTime.new(start_day.year,
+      start_day.month, start_day.day, hour.to_i, minute.to_i)
+  end
+
+  def self.start_date_from params
+    Date.parse(params['start_day'])
+  end
+
+
+  def update params
+    begin
+      hour, minute = params[:start_time].match(/(\d\d):(\d\d)/)[1,2]
+      start_day = Date.parse(params['start_day'])
+      start_time = DateTime.new(start_day.year,
+        start_day.month, start_day.day, hour.to_i, minute.to_i)
+      self.dtstart = start_time
+      minutes = EventParamHelper.duration params['duration']
+      self.dtend = start_time + minutes
+    rescue
+      STDERR.puts "event#update params: problems with (up)date."
+    end
+    
+    self.summary     = params['summary']     if params['summary']
+    self.description = params['description'] if params['description']
+    self.location    = params['location']    if params['location']
+  end
+
   # Create a new event from params as given by new_event form of kalindar.
   # this should eventually go somewhere else, but its better here than in app already.
   def self.create_from_params params
     event = RiCal::Component::Event.new($cal.calendars.first)
     event.uid = SecureRandom.uuid
-    start_time = start_time_from_params params
+    if params['summary']
+      event.summary = params['summary']
+    end
+    if params['description']
+      event.description = params['description']
+    end
+    if params['location']
+      event.location = params['location']
+    end
+
+    # Access should be made failsafe.
+    start_time = start_time_from_params(params)
     event.dtstart = start_time
-    event.dtend = end_time_from_params params, start_time
-    event.summary = params['summary']
-    event.description = params['description']
-    event.location = params['location']
+    minutes = EventParamHelper.duration params['duration']
+    event.dtend = start_time + Rational(minutes, 1440)
     Event.new event
   end
 
   private
+end
 
-  # Create DateTime from yyyymmdd + h + m .
-  def self.start_time_from_params params
-    hour = params['start_time'][/\d\d/].to_i
-    minute = params['start_time'][/:\d\d/][1,2].to_i
-    start_day = Date.parse(params['start_day'])
-    start_time = DateTime.new(start_day.year,
-      start_day.month, start_day.day, hour, minute)
+module EventParamHelper
+  
+  # minutes for abbrevations
+  @@duration_param = {
+    '15m' => 15,
+    '30m' => 30,
+    '60m' => 60,
+    '90m' => 90,
+    '120m' => 120,
+    '1d'  => 24 * 60,
+    '2d'  => 24 * 2 * 60,
+    '5d'  => 24 * 5 * 60,
+    '1w'  => 24 * 7 * 60
+  }
+  def self.duration duration_p
+    # throw
+    @@duration_param[duration_p]
   end
 
-  # Adds minutes to start_time.
-  def self.end_time_from_params params, start_time
-    minutes = case params['duration']
-             when '15m' then 15
-             when '30m' then 30
-             when '60m' then 60
-             when '90m' then 90
-             when '120m' then 120
-             when '1d' then 24 * 60
-             when '2d' then 24 * 2 * 60
-             when '5d' then 24 * 5 * 60
-             when '1w' then 24 * 7 * 60
-             end
-    # alternatively, set the duration only, and hope ri_cal will do fine.
-    start_time + Rational(minutes, 1440) 
+  def self.check_params params
+    errors = {}
+    if not(params[:start_time] =~ /\d\d:\d\d/)
+      errors[:start_time] = ''
+    end
+    if not(duration params[:duration])
+      errors[:duration] = ''
+    end
+    errors
   end
-
 end

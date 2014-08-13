@@ -21,6 +21,11 @@ en:
   5d:           "5 days"
   1w:           "a week"
   save:         "save"
+  cancel:       "cancel"
   time:
+    formats:
+      short: "%Y/%m/%d"
+      hm: "%H:%M"
+  date:
     formats:
       short: "%Y/%m/%d"

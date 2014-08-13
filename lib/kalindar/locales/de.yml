@@ -21,6 +21,11 @@ de:
   5d:           "5 Tage"
   1w:           "eine Woche"
   save:         "speichern"
+  cancel:       "abbrechen"
   time:
+    formats:
+      short: "%d.%m.%Y"
+      hm: "%H:%M"
+  date:
     formats:
       short: "%d.%m.%Y"

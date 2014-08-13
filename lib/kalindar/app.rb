@@ -41,6 +41,17 @@ class KalindarApp < Sinatra::Base
     redirect '/events'
   end
 
+  get '/events/:year/:month' do
+    @events = {}
+    # Events from start time to 31 days later
+    date = Date.new(params[:year].to_i, params[:month].to_i, 1)
+    (date .. date + 30).each do |day|
+      #@events[d] = $cal.events_for(d)
+      @events[day] = $cal.find_events day.to_date
+    end
+    slim :event_list
+  end
+
   get '/events' do
     @events = {}
     # events from today to in 30 days

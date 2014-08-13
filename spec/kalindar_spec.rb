@@ -71,43 +71,64 @@ describe EventCalendar do
     end
   end
 
-  it "#find_by_uid" do
-    cal = EventCalendar.new 'spec/testcal.ics'
-    event = cal.find_by_uid 'cb523dc2-eab8-49c9-a99f-ed69ac3b65d0'
-    expect(event.summary).to eq 'allday'
+  describe "#find_by_uid" do
+    it 'finds by uuid' do
+      event = subject.find_by_uid 'cb523dc2-eab8-49c9-a99f-ed69ac3b65d0'
+      expect(event.summary).to eq 'allday'
+    end
+    it 'wraps in Event Delegate' do
+      event = subject.find_by_uid 'cb523dc2-eab8-49c9-a99f-ed69ac3b65d0'
+      expect(event.is_a? Event).to eq true
+    end
   end
 end
 
 describe "Event" do
+  subject(:allday_event) {}
+  subject(:events) {
+    cal = EventCalendar.new 'spec/testcal.ics'
+    cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
+  }
+  subject(:allday_event) {
+    cal = EventCalendar.new 'spec/testcal.ics'
+    cal.find_by_uid("cb523dc2-eab8-49c9-a99f-ed69ac3b65d0")
+  }
+
   describe "#start_time_f" do
     it "returns the time if given day is start day" do
-      cal = EventCalendar.new 'spec/testcal.ics'
-      events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
-      expect(Event.new(events[0]).start_time_f Date.new(2014, 8, 27)).to eq "12:00"
-      expect(Event.new(events[0]).start_time_f Date.new(2014, 8, 28)).to eq ""
+      expect(events[0].start_time_f Date.new(2014, 8, 27)).to eq "12:00"
+      expect(events[0].start_time_f Date.new(2014, 8, 28)).to eq "..."
     end
   end
 
   describe "#finish_time_f" do
     it "returns the time if given day is end day" do
-      cal = EventCalendar.new 'spec/testcal.ics'
-      events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
-      expect(Event.new(events[0]).finish_time_f Date.new(2014, 8, 27)).to eq ""
-      expect(Event.new(events[0]).finish_time_f Date.new(2014, 8, 28)).to eq "13:00"
+      expect(events[0].finish_time_f Date.new(2014, 8, 27)).to eq "..."
+      expect(events[0].finish_time_f Date.new(2014, 8, 28)).to eq "13:00"
     end
   end
+
   describe "#time_f" do
     it "returns the from to time for given day" do
-      cal = EventCalendar.new 'spec/testcal.ics'
-      events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
-      expect(Event.new(events[0]).time_f Date.new(2014, 8, 27)).to eq "12:00 - "
+      puts allday_event
+      expect(allday_event.time_f Date.new(2014, 7, 27)).to eq ""
+    end
+    it "returns the from to time" do
+      expect(events[0].from_to_f).to eq "27.08. 12:00 - 28.08. 13:00"
     end
   end
-  describe "#time_f" do
-    it "returns the from to time" do
+
+  describe "#update" do
+    it "updates from params" do
+      # should be fail safe, too
       cal = EventCalendar.new 'spec/testcal.ics'
-      events = cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
-      expect(Event.new(events[0]).from_to_f).to eq "27.08. 12:00 - 28.08. 13:00"
+      event = cal.find_by_uid("aea8d217-8025-4d9b-88e6-3df9e6abd33c")
+      params = {'location' => 'a place', 'description' => 'exact description', :summary => 'synopsis'}
+      event.update params
+      event_fetched = cal.find_by_uid("aea8d217-8025-4d9b-88e6-3df9e6abd33c")
+      expect(event_fetched.location).to eql 'a place'
+      expect(event_fetched.description).to eql 'exact description'
+      expect(event_fetched.summary).to eql 'synopsis'
     end
   end
 end

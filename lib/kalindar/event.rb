@@ -5,22 +5,35 @@ class Event < SimpleDelegator
   # Time it starts at day, or '...'
   def start_time_f day
     #puts "start #{start_time} : #{start_time.class} #{start_time.to_date} #{day}"
-    return start_time.strftime('%H:%M') if start_time.to_date == day.to_date
-    return "..."
+    if dtstart.class == Date
+      # whole day
+      ""
+    elsif start_time.to_date == day.to_date
+      start_time.strftime('%H:%M')
+    else
+      "..."
+    end
   end
 
   # Time it finishes at day, or '...'
   def finish_time_f day
-    return finish_time.strftime('%H:%M') if finish_time.to_date == day.to_date
-    return "..."
+    if dtend.class == Date
+      # whole day
+      ""
+    elsif finish_time.to_date == day.to_date
+      finish_time.strftime('%H:%M')
+    else
+      return "..."
+    end
   end
 
   # Time it finishes and or starts at day, or '...'
   def time_f day
     start = start_time_f day
     finish = finish_time_f day
-    if start == finish && start == "..."
-      "..."
+    if start == finish && start == ""
+      # whole day
+      ""
     else
       "#{start_time_f day} - #{finish_time_f day}"
     end

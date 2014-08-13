@@ -51,47 +51,47 @@ class KalindarApp < Sinatra::Base
     slim :event_list
   end
 
-  # Create DateTime from yyyymmdd + h + m .
-  def start_time_from_params params
-    hour = params['start_time'][/\d\d/].to_i
-    minute = params['start_time'][/:\d\d/][1,2].to_i
-    start_day = Date.parse(params['start_day'])
-    start_time = DateTime.new(start_day.year,
-      start_day.month, start_day.day, hour, minute)
-  end
-
-  # Adds minutes to start_time.
-  def end_time_from_params params, start_time
-    minutes = case params['duration']
-             when '15m' then 15
-             when '30m' then 30
-             when '60m' then 60
-             when '90m' then 90
-             when '120m' then 120
-             when '1d' then 24 * 60
-             when '2d' then 24 * 2 * 60
-             when '5d' then 24 * 5 * 60
-             when '1w' then 24 * 7 * 60
-             end
-    start_time + Rational(minutes, 1440) 
+  get '/events/twoday' do
+    @events = {}
+    # events from today to in 30 days
+    (DateTime.now .. DateTime.now + 30).each do |day|
+      #@events[d] = $cal.events_for(d)
+      @events[day] = $cal.find_events day.to_date
+    end
+    @events = @events.values.flatten.sort_by {|e| e.start_time}
+    slim :twoday_list
   end
 
   # Add event, save ics file.
   put '/event' do
-    event = RiCal::Component::Event.new($cal.calendars.first)
-    event.uid = SecureRandom.uuid
-    start_time = start_time_from_params params
-    event.dtstart = start_time
-    event.dtend = end_time_from_params params, start_time
-    event.summary = params['summary']
-    event.description = params['description']
-    event.location = params['location']
+    puts params
+    errors = EventParamHelper.check_params params
+    if !errors.empty?
+      slim :new_event, :locals => {'start_date' => Date.parse(params[:start_day])}
+    end
+    begin
+      event = Event.create_from_params params
+    rescue
+      return 502, "Eingabefehler"
+    end
 
-    # Motivate Calendar Delegate
     $cal.calendars.first.events << event
     $cal.calendars.first.write_back!
 
-    redirect back
+    # redirect back
+    #redirect '/'
+
+    if request.xhr?
+      @events = {}
+      # events from today to in 30 days
+      (DateTime.now .. DateTime.now + 30).each do |day|
+        #@events[d] = $cal.events_for(d)
+        @events[day] = $cal.find_events day.to_date
+      end
+      slim :event_list, :layout => false
+    else
+      redirect '/'
+    end
   end
 
   get '/event/new/:day' do

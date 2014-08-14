@@ -31,10 +31,14 @@ describe EventCalendar do
       expect(event_names.include? "onehour").to eq true
       expect(event_names.include? "allday").to eq true
     end
-    it 'handles whole day endtime correctly' do
+    it 'handles whole day endtime correctly (ends next day)' do
       events = subject.find_events (Date.new(2014, 07, 28))
       event_names = events.map(&:summary)
       expect(event_names.include? "allday").to eq false
+    end
+    it 'finds multiday events that cover the given date' do
+      events = subject.find_events (Date.new(2014, 07, 27))
+      expect(events.map(&:summary).include? "multidays").to eq true
     end
     it 'wraps events as Event delegates' do
       events = subject.find_events (Date.new(2014, 07, 27))
@@ -93,6 +97,10 @@ describe "Event" do
     cal = EventCalendar.new 'spec/testcal.ics'
     cal.find_by_uid("cb523dc2-eab8-49c9-a99f-ed69ac3b65d0")
   }
+  subject(:multiday_event) {
+    cal = EventCalendar.new 'spec/testcal.ics'
+    cal.find_by_uid("4a129461-cd74-4b3a-a307-faa1e8846cc2")
+  }
 
   describe "#start_time_f" do
     it "returns the time if given day is start day" do
@@ -110,9 +118,13 @@ describe "Event" do
 
   describe "#time_f" do
     it "returns the from to time for given day" do
-      puts allday_event
       expect(allday_event.time_f Date.new(2014, 7, 27)).to eq ""
     end
+    it "renders multiday in between with ... " do
+      expect(multiday_event.time_f Date.new(2014, 7, 27)).to eq "..."
+    end
+  end
+  describe "#from_to_f" do
     it "returns the from to time" do
       expect(events[0].from_to_f).to eq "27.08. 12:00 - 28.08. 13:00"
     end
@@ -123,12 +135,16 @@ describe "Event" do
       # should be fail safe, too
       cal = EventCalendar.new 'spec/testcal.ics'
       event = cal.find_by_uid("aea8d217-8025-4d9b-88e6-3df9e6abd33c")
-      params = {'location' => 'a place', 'description' => 'exact description', :summary => 'synopsis'}
+
+      params = {'location' => 'a place', 'description' => 'exact description', 'summary'=> 'synopsis', 'duration' => '15m', 'start_day' => '20140808', 'start_time' => '10:10'}
       event.update params
+
       event_fetched = cal.find_by_uid("aea8d217-8025-4d9b-88e6-3df9e6abd33c")
       expect(event_fetched.location).to eql 'a place'
       expect(event_fetched.description).to eql 'exact description'
       expect(event_fetched.summary).to eql 'synopsis'
+      expect(event_fetched.dtstart).to eq DateTime.new(2014, 8, 8, 10, 10)
+      expect(event_fetched.dtend).to eq DateTime.new(2014, 8, 8, 10, 25)
     end
   end
 end

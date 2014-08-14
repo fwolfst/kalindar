@@ -24,6 +24,9 @@ class KalindarApp < Sinatra::Base
   # We like pretty html indentation
   set :slim, :pretty => true
 
+  # Allow inclusion in iframe.
+  set :protection, :except => :frame_options
+
   helpers do
     def li_day_class day
       return "sunday" if day.sunday?

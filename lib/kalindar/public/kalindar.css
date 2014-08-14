@@ -1,46 +1,56 @@
+#main a{
+  font-size: smaller;
+}
+.dayname {
+  font-size: larger;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  border-bottom: solid 1px black;
+}
 ul.day_list {
   list-style: none;
-  border-top: solid 1px;
-  border-left: solid 1px;
-  border-right: solid 1px;
-  background-color: #FEEEFE;
   padding-left: 0em;
   margin-left: 0.3em;
   width: 18em;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
 }
 
 li.day {
   border-top: solid 1px;
+  border-bottom: solid 1px;
   border-left: solid 1px;
-  background-color: #EEEEEE;
+  border-right: solid 1px;
+  background-color: #F4F4F4;
+  margin-bottom: 0.5em;
 }
 
 li.saturday {
   border-top: solid 1px;
-  border-left: solid 1px;
+  border-bottom: solid 1px;
   background-color: #DADAEE;
+  margin-bottom: 1em;
 }
 
 li.sunday {
   border-top: solid 1px;
-  border-left: solid 1px;
+  border-bottom: solid 1px;
   background-color: #BBBBEE;
+  margin-bottom: 3em;
 }
 
 ul.event_list {
   list-style: none;
-  border-top: solid 1px;
-  border-bottom: solid 1px;
   background-color: #FEFEFE;
-  margin-left: 0.5em;
   padding-left: 0.5em;
-  padding-right: 0em;
+  padding-right: 0.5em;
   padding-top: 0em;
   padding-bottom: 0em;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
 }
 
 ul.event_list li {
-  border-bottom: solid 1px;
   margin-left: 0.1em;
   clear: both;
 }
@@ -51,11 +61,15 @@ ul.event_list li {
 
 #time {
   float: left;
+  font-size: smaller;
+  /*
   width: 6.8em;
+  */
 }
 
 #summary {
   font-weight: bold;
+  text-align: center;
 }
 
 .hidden_new_event_mask {
@@ -67,4 +81,8 @@ ul.event_list li {
   display: none;
   margin-left: 0.5em;
   font-size: 80%;
+}
+
+#edit_event_link {
+  margin-left: 1em;
 }

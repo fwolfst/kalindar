@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kalindar (0.0.2)
+    kalindar (0.1.0)
       i18n (~> 0.6)
       ri_cal (~> 0.8)
       sinatra (~> 1.4)

@@ -65,15 +65,15 @@ class Event < SimpleDelegator
 
   def update params
     begin
-      hour, minute = params[:start_time].match(/(\d\d):(\d\d)/)[1,2]
+      hour, minute = params['start_time'].match(/(\d\d):(\d\d)/)[1,2]
       start_day = Date.parse(params['start_day'])
       start_time = DateTime.new(start_day.year,
         start_day.month, start_day.day, hour.to_i, minute.to_i)
       self.dtstart = start_time
       minutes = EventParamHelper.duration params['duration']
-      self.dtend = start_time + minutes
-    rescue
-      STDERR.puts "event#update params: problems with (up)date."
+      self.dtend = start_time + Rational(minutes, 1440)
+    rescue => e
+      STDERR.puts "event#update params: problems with (up)date #{e.message}"
     end
     
     self.summary     = params['summary']     if params['summary']

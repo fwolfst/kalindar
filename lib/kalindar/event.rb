@@ -34,6 +34,8 @@ class Event < SimpleDelegator
     if start == finish && start == ""
       # whole day
       ""
+    elsif start == finish && start == "..."
+      "..."
     else
       "#{start_time_f day} - #{finish_time_f day}"
     end

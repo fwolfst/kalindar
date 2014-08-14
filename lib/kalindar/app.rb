@@ -101,11 +101,37 @@ class KalindarApp < Sinatra::Base
     end
   end
 
+  # Show new event template.
   get '/event/new/:day' do
-    slim :new_event, :locals => {'start_date' => nil}
+    # Aim is to get a new event in every case
+    #@event = Event.create_from_params params
+    @event = Event.new(RiCal::Component::Event.new($cal.calendars.first))
+    @event.dtstart = Date.parse(params[:day])
+    slim :new_event, :locals => {'start_date' => Date.parse(params[:day])}
   end
 
+  # Yet empty route.
+  get '/event/delete/:uuid' do
+    redirect back
+  end
+
+  # Show edit view.
   get '/event/edit/:uuid' do
-    slim :edit_event, :locals => {'event' => $cal.calendars.first.events[0]}
+    event = $cal.find_by_uid params[:uuid]
+    if event.nil?
+      redirect back
+    else
+      slim :edit_event, :locals => {'event' => event}
+    end
+  end
+
+  # Edit/save an event.
+  put '/event/edit/:uuid' do
+    # validate_params
+    puts params
+    event = $cal.find_by_uid(params[:uuid])
+    event.update params
+    $cal.calendars.first.write_back!
+    redirect '/'
   end
 end

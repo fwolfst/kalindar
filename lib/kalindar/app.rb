@@ -6,6 +6,7 @@ require 'slim'
 require 'i18n'
 require 'i18n/backend/fallbacks'
 
+# Sinatra App for Kalindar, show ics files.
 class KalindarApp < Sinatra::Base
   $conf = JSON.load(File.new('config.json'))
   $cal = EventCalendar.new($conf['calendar_files'])

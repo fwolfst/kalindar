@@ -74,9 +74,8 @@ class KalindarApp < Sinatra::Base
     slim :twoday_list
   end
 
-  # Add event, save ics file.
+  # Add new event, save ics file.
   put '/event' do
-    puts params
     errors = EventParamHelper.check_params params
     if !errors.empty?
       slim :new_event, :locals => {'start_date' => Date.parse(params[:start_day])}
@@ -90,14 +89,10 @@ class KalindarApp < Sinatra::Base
     $cal.calendars.first.events << event
     $cal.calendars.first.write_back!
 
-    # redirect back
-    #redirect '/'
-
     if request.xhr?
       @events = {}
-      # events from today to in 30 days
+      # Events from today to in 30 days
       (DateTime.now .. DateTime.now + 30).each do |day|
-        #@events[d] = $cal.events_for(d)
         @events[day] = $cal.find_events day.to_date
       end
       slim :event_list, :layout => false

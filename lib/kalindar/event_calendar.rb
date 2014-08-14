@@ -77,9 +77,9 @@ class EventCalendar
         # If end-date is a Date (vs DateTime) let it be
         # All day/multiple day events
         if event.dtstart.class == Date && event.dtend.class == Date
-          event.dtstart.to_date == date
+          event.dtstart.to_date == date || (event.dtstart < date && event.dtend > date)
         else
-          event.dtstart.to_date == date || event.dtend.to_date == date
+          event.dtstart.to_date == date || event.dtend.to_date == date || (event.dtstart < date && event.dtend > date)
           # occurrences need to be re-enabled
           #||!event.occurrences(:overlapping => [date, date +1]).empty?
         end

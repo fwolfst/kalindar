@@ -1,14 +1,15 @@
-form.pure-form.pure-form-stacked action="/event" method="post"
+form.pure-form.pure-form-stacked action="/event/edit/#{event.uid}" method="post"
   input type="hidden" name="_method" value="put"
   input type="hidden" name="uid" value=event.uid
+
   fieldset
     legend = t 'edit_event'
 
     label for="start_day" = t 'start_date'
-    input type="text" readonly=true name="start_day" value="#{event.start_time}" 
+    input type="text" readonly=true name="start_day" value="#{l event.start_time, :format => :short}" 
 
     label for="start_time" = t 'when'
-    input type="text" name="start_time" placeholder="HH:MM" value=event.start_time
+    input type="text" name="start_time" placeholder="HH:MM" value="#{l event.start_time, :format => :hm}"
 
     label for="start" = t 'summary'
     input type="text" name="summary" placeholder="summary" value=event.summary
@@ -33,3 +34,4 @@ form.pure-form.pure-form-stacked action="/event" method="post"
       option value="5d"    = t '5d'
       option value="1w"    = t '1w'
     button.pure-button type="submit" value="save" = t 'save'
+    button.pure-button type="submit" value="cancel" = t 'cancel'

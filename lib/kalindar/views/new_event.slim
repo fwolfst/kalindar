@@ -1,4 +1,4 @@
-form.pure-form.pure-form-stacked action="/event" method="post"
+form.pure-form.pure-form-stacked#new_event_form action="/event" method="post"
   input type="hidden" name="_method" value="put"
   fieldset
     legend = t 'new_event'
@@ -8,7 +8,7 @@ form.pure-form.pure-form-stacked action="/event" method="post"
       input type="text" readonly=true name="start_day" value="#{start_date}" 
     - else
       label for="start_day" = t 'start_date'
-      input type="text" name="start_day" value="" placeholder="YYYYMMDD")
+      input type="text" name="start_day" value=event.start_date placeholder="YYYYMMDD")
   
     label for="start_time" = t 'when'
     input type="text" name="start_time" value="" placeholder="HH:MM"
@@ -35,3 +35,4 @@ form.pure-form.pure-form-stacked action="/event" method="post"
       option value="5d"    = t '5d'
       option value="1w"    = t '1w'
     button.pure-button type="submit" value="save" = t 'save'
+    button.pure-button#cancel type="submit" value="save" = t 'cancel'

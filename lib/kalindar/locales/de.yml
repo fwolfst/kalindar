@@ -26,6 +26,17 @@ de:
     formats:
       short: "%d.%m.%Y"
       hm: "%H:%M"
+  # Seems better option for names (with e.g. %a)
+  # http://blog.lingohub.com/developers/2013/08/internationalization-for-ruby-i18n-gem/
   date:
+    day:
+      day_names:
+        - Montag
+        - Dienstag
+        - Mittwoch
+        - Donnerstag
+        - Freitag
+        - Samstag
+        - Sonntag
     formats:
       short: "%d.%m.%Y"

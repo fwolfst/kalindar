@@ -27,5 +27,14 @@ en:
       short: "%Y/%m/%d"
       hm: "%H:%M"
   date:
+    day:
+      day_names:
+        - Monday
+        - Tuesday
+        - Wednesday
+        - Thursday
+        - Friday
+        - Saturday
+        - Sunday
     formats:
       short: "%Y/%m/%d"

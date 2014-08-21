@@ -131,6 +131,9 @@ class KalindarApp < Sinatra::Base
   # Edit/save an event.
   put '/event/edit/:uuid' do
     # validate_params
+    if params[:submitbutton] == 'cancel'
+      redirect '/'
+    end
     puts params
     event = $cal.find_by_uid(params[:uuid])
     event.update params

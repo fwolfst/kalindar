@@ -33,5 +33,5 @@ form.pure-form.pure-form-stacked action="/event/edit/#{event.uid}" method="post"
       option value="2d"    = t '2d'
       option value="5d"    = t '5d'
       option value="1w"    = t '1w'
-    button.pure-button type="submit" value="save" = t 'save'
-    button.pure-button type="submit" value="cancel" = t 'cancel'
+    button.pure-button name="submitbutton" type="submit" value="save" text= t 'save'
+    button.pure-button name="submitbutton" type="submit" value="cancel" text= t 'cancel'

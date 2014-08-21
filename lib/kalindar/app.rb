@@ -10,6 +10,7 @@ require 'i18n/backend/fallbacks'
 class KalindarApp < Sinatra::Base
   $conf = JSON.load(File.new('config.json'))
   $cal = EventCalendar.new($conf['calendar_files'])
+  puts $conf['calendar_colors']
 
   configure do
     I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
@@ -85,7 +86,9 @@ class KalindarApp < Sinatra::Base
     end
     begin
       event = Event.create_from_params params
-    rescue
+    rescue Exception => e
+      puts e.inspect
+      puts e.backtrace
       return 502, "Eingabefehler"
     end
 
@@ -139,5 +142,18 @@ class KalindarApp < Sinatra::Base
     event.update params
     $cal.calendars.first.write_back!
     redirect '/'
+  end
+
+  post '/events/full' do
+    params[:calendars]
+    @events = {}
+    # events from today to in 30 days
+    (DateTime.now .. DateTime.now + 30).each do |day|
+      #@events[d] = $cal.events_for(d)
+      # bring chosen calendars into equation
+      @events[day] = $cal.find_events day.to_date
+    end
+    slim :event_list
+  
   end
 end

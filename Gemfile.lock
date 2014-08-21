@@ -1,7 +1,11 @@
 PATH
   remote: .
   specs:
+<<<<<<< Updated upstream
     kalindar (0.1.1)
+=======
+    kalindar (0.1.0)
+>>>>>>> Stashed changes
       i18n (~> 0.6)
       ri_cal (~> 0.8)
       sinatra (~> 1.4)

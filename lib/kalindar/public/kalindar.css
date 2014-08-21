@@ -6,6 +6,11 @@
   margin: 0 0 0 0;
   padding: 0 0 0 0;
   border-bottom: solid 1px black;
+  background-image: -moz-linear-gradient(
+      center top,
+      rgb(180,180,180) 0%,
+      rgb(220,220,220) 100%
+  );
 }
 ul.day_list {
   list-style: none;
@@ -23,6 +28,20 @@ li.day {
   border-right: solid 1px;
   background-color: #F4F4F4;
   margin-bottom: 0.5em;
+  background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0.5, rgb(221,221,221)),
+      color-stop(0.5, rgb(255,255,255))
+  );
+  background-image: -moz-linear-gradient(
+      center top,
+      rgb(221,221,221) 50%,
+      rgb(255,255,255) 50%
+  );
+  -moz-box-shadow:    inset 0 0 10px #000000;
+  box-shadow:         inset 0 0 10px #000000;
 }
 
 li.saturday {
@@ -53,6 +72,18 @@ ul.event_list {
 ul.event_list li {
   margin-left: 0.1em;
   clear: both;
+  background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0.5, rgb(000,221,221)),
+      color-stop(0.5, rgb(255,255,255))
+  );
+  background-image: -moz-linear-gradient(
+      center top,
+      rgb(180,180,180) 0%,
+      rgb(220,220,220) 100%
+  );
 }
 
 #event {

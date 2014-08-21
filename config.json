@@ -5,8 +5,10 @@
   // Specify one or more ics files.
   // You can skip the list (['one.ics', 'two.ics']) syntax for single ones.
   // The first calender is the one to be edited.
-  "calendar_files": "kalindar.ics",
+  "calendar_files": ["kalindar.ics", "spec/testcal.ics"],
 
   // Specify the locale (currently 'de' or 'en').
-  "locale": "de"
+  "locale": "de",
+
+  "preset_locations": ["Kneipe", "gr. Seminarraum"]
 }

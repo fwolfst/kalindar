@@ -5,18 +5,33 @@ require 'sinatra/base'
 require 'slim'
 require 'i18n'
 require 'i18n/backend/fallbacks'
+require 'listen'
 
 # Sinatra App for Kalindar, show ics files.
 class KalindarApp < Sinatra::Base
   $conf = JSON.load(File.new('config.json'))
-  $cal = EventCalendar.new($conf['calendar_files'])
-  puts $conf['calendar_colors']
+
+  # Read in calendar files, fill global cal var.
+  def load_global_cal
+    $cal = EventCalendar.new($conf['calendar_files'])
+  end
+
+  load_global_cal
 
   configure do
     I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
     I18n.load_path = Dir[File.join(settings.root, 'locales', '*.yml')]
     I18n.backend.load_translations
     I18n.default_locale = $conf['locale'].to_sym
+
+    # Watch for calendar file changes.
+    [*$conf['calendar_files']].each do |file|
+      path = Pathname.new(file).realpath
+      dir  = path.dirname.to_s
+      base = path.basename.to_s
+      listener = Listen.to(dir, only: /#{base}/) { load_global_cal }
+      listener.start
+    end
   end
 
   # Will use http-verb PUT
@@ -70,11 +85,14 @@ class KalindarApp < Sinatra::Base
   get '/events/twoday' do
     @events = {}
     # events from today to in 30 days
-    (DateTime.now .. DateTime.now + 30).each do |day|
+    (DateTime.now .. DateTime.now + 2).each do |day|
       #@events[d] = $cal.events_for(d)
       @events[day] = $cal.find_events day.to_date
     end
-    @events = @events.values.flatten.sort_by {|e| e.start_time}
+    
+    #@events = @events.values.flatten.sort_by {|e| e.start_time}
+    @today = Date.today
+    @tomorrow = @today + 1
     slim :twoday_list
   end
 
@@ -154,6 +172,5 @@ class KalindarApp < Sinatra::Base
       @events[day] = $cal.find_events day.to_date
     end
     slim :event_list
-  
   end
 end

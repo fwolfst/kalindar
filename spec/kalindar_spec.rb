@@ -49,7 +49,7 @@ describe EventCalendar do
   end
 
   it 'finds events that reocur' do
-    events = subject.find_events (Date.new(2014, 07, 27))
+    events = subject.find_events (Date.new(2014, 07, 28))
     event_names = events.map(&:summary)
     expect(event_names.include? "daily").to eq true
   end

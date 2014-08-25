@@ -22,6 +22,8 @@ en:
   1w:           "a week"
   save:         "save"
   cancel:       "cancel"
+  today:        "today"
+  tomorrow:     "tomorrow"
   time:
     formats:
       short: "%Y/%m/%d"

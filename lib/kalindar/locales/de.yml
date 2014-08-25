@@ -22,6 +22,8 @@ de:
   1w:           "eine Woche"
   save:         "speichern"
   cancel:       "abbrechen"
+  today:        "heute"
+  tomorrow:     "morgen"
   time:
     formats:
       short: "%d.%m.%Y"

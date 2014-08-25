@@ -60,15 +60,13 @@ describe EventCalendar do
       event_names = events.map(&:summary)
       expect(event_names).to eq ["allday", "onehour", "daily", "daily"]
     end
-  end
-
-  describe "#events_in" do
     it '#events_in by day' do
       events = subject.events_in(Date.new(2014, 7, 27), Date.new(2014, 7, 28))
       event_names = events.map(&:summary)
       expect(event_names).to eq ["allday", "onehour", "daily", "allday", "daily"]
       expect(event_names.class).to eq({}.class)
     end
+    # multiday events!
     it 'wraps in Event Delegate' do
       events = subject.events_in(Date.new(2014, 7, 27), Date.new(2014, 7, 28))
       expect(events.collect{|e| e.is_a? Event}.length).to eq events.length
@@ -124,6 +122,7 @@ describe "Event" do
       expect(multiday_event.time_f Date.new(2014, 7, 27)).to eq "..."
     end
   end
+
   describe "#from_to_f" do
     it "returns the from to time" do
       expect(events[0].from_to_f).to eq "27.08. 12:00 - 28.08. 13:00"

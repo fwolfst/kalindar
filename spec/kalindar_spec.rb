@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ri_cal'
 
 describe Kalindar do
   it 'has a version number' do

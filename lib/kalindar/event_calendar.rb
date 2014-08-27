@@ -34,15 +34,7 @@ class EventCalendar
     @calendars.flatten!
   end
 
-  # Catches only certain events
-  def singular_events_for_month year, month
-    @calendar.map do |calendar|
-      calendar.events.select { |event|
-        event_between? event, dtmonth_start(year, month), dtmonth_end(year, month)
-      }
-    end.flatten
-  end
-
+  # Find events during date(s)/timespan.
   # start_date and end_date are inclusive,
   # start_date can be Timespan, too
   def events_in start_date, end_date=nil

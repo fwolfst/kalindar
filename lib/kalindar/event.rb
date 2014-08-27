@@ -3,6 +3,19 @@ require 'delegate'
 module Kalindar
   # Delegator with some handy shortcuts
   class Event < SimpleDelegator
+
+    attr_accessor :calendar
+    attr_accessor :modifiable
+    
+    def recurs?
+      !recurrence_id.nil?
+    end
+
+    # is modifiable? if recuring event, its not
+    def modifiable?
+      @modifiable == true && !recurs?
+    end
+
     # Time it starts at day, or '...'
     def start_time_f day
       #puts "start #{start_time} : #{start_time.class} #{start_time.to_date} #{day}"

@@ -34,11 +34,11 @@ Be careful.  Kalindar might destroy, change or delete your ics file(s)!
 
 Kalindar does not care about timezones!
 
-Kalindar gets confused by re-occuring events, they are shown, but better do not modify.
+Kalindar does not let you edit recuring events.
 
 ### Configuration
 
-Configuration is done in config.json .  There one or many calendar (ics) files and the locale can be set.
+Configuration is done in config.json .  There one or many calendar (ics) files and the locale can be set.  Note that only the first calendar defined here can be edited.
 
 ## Contributing
 

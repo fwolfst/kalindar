@@ -7,16 +7,17 @@ require 'i18n'
 require 'i18n/backend/fallbacks'
 require 'listen'
 
+# Read in calendar files, fill global cal var.
+def cals
+  cal = EventCalendar.new($conf['calendar_files'])
+end
+
+
 # Sinatra App for Kalindar, show ics files.
 class KalindarApp < Sinatra::Base
   $conf = JSON.load(File.new('config.json'))
 
-  # Read in calendar files, fill global cal var.
-  def load_global_cal
-    $cal = EventCalendar.new($conf['calendar_files'])
-  end
-
-  load_global_cal
+  $cal = cals
 
   configure do
     I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
@@ -29,7 +30,7 @@ class KalindarApp < Sinatra::Base
       path = Pathname.new(file).realpath
       dir  = path.dirname.to_s
       base = path.basename.to_s
-      listener = Listen.to(dir, only: /#{base}/) { load_global_cal }
+      listener = Listen.to(dir, only: /#{base}/) { $cal = cals }
       listener.start
     end
   end

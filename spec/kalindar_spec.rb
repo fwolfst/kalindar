@@ -25,7 +25,7 @@ describe EventCalendar do
     expect(cal.calendars.first.filename).to eql 'spec/testcal.ics'
   end
 
-  describe "#find_events" do
+  describe "#find_events_simple" do
     it 'finds events given date' do
       events = subject.find_events (Date.new(2014, 07, 27))
       event_names = events.map(&:summary)

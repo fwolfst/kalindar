@@ -19,7 +19,8 @@ ul.day_list
               br
               #summary
               | #{ev.summary}
-              a#edit_event_link href="/event/edit/#{ev.uid}" = t 'edit'
+              - if ev.modifiable?
+                a#edit_event_link href="/event/edit/#{ev.uid}" = t 'edit'
               #hidden_description
                 | (#{ev.from_to_f})
                 br

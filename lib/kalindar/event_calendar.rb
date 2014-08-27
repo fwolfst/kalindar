@@ -40,34 +40,31 @@ class EventCalendar
   def events_in start_date, end_date=nil
     if end_date.nil? && !start_date.is_a?(Timespan)
       timespan = Timespan.day_end start_date
-      end_date = timespan.finish
-      start_date = timespan.start
     end
     if start_date.is_a? Timespan
       timespan = start_date
-      end_date = start_date.finish
-      start_date = start_date.start
+    end
+    if start_date && end_date
+      timespan = Timespan.new start_date, end_date
     end
 
-    # All overlapping occurences.
-    occurrences = events.map do |e|
-      e.occurrences(:overlapping => [start_date, end_date])
-    end
+    events_in_time = @calendars.map.with_index do |calendar, idx|
+      # Collect Kalindar::Events in that time
+      events = calendar.events.map do |event|
+        occurrences_in(event, timespan).map {|e| Kalindar::Event.new e }
+      end.flatten
+
+      # Set modification and calendar field.
+      is_first = idx == 0
+      events.each do |e|
+        e.modifiable = is_first
+        e.calendar = calendar
+      end
+      events
+    end.flatten
 
     # Collect occurences by date.
-    hash = occurrences.inject({}) do |hsh, o|
-      o.each do |oc|
-        event = Kalindar::Event.new(oc)
-        (oc.dtstart.to_date .. oc.dtend.to_date).each do |day|
-          # Strip timerange and exclude one-and-whole-day events (they "end" next day).
-          if day >= start_date && day <= end_date && !(oc.dtstart != oc.dtend && oc.dtend.class == Date && oc.dtend == day)
-            (hsh[day] ||= []) << event
-          end
-        end
-      end
-      hsh
-    end
-    hash
+    unfold_dates events_in_time, timespan
   end
 
   def find_by_uid uuid
@@ -106,5 +103,22 @@ class EventCalendar
   def event_includes? event, date
     incl = event.dtstart.class == event.dtend.class && event.dtstart.class ==  Icalendar::Values::DateTime && (date_between?(date, event.dtstart, event.dtend))
     incl
+  end
+
+  # List occurrences in timespan
+  def occurrences_in event, timespan
+    event.occurrences(:overlapping => [timespan.start, timespan.finish])
+  end
+
+  # Make hash with one entry per day and event that lies in timespan
+  def unfold_dates events, timespan
+    events.inject({}) do |hash, event|
+      (event.dtstart.to_date .. event.dtend.to_date).each do |day|
+        if timespan.spans?(day) && !(event.dtstart != event.dtend && event.dtend.class == Date && event.dtend == day)
+          (hash[day] ||= []) << event
+        end
+      end
+      hash
+    end
   end
 end

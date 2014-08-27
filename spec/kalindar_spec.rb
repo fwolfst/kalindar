@@ -25,74 +25,36 @@ describe EventCalendar do
     expect(cal.calendars.first.filename).to eql 'spec/testcal.ics'
   end
 
-  describe "#find_events_simple" do
-    it 'finds events given date' do
-      events = subject.find_events_simple (Date.new(2014, 07, 27))
-      event_names = events.map(&:summary)
-      expect(event_names.include? "onehour").to eq true
-      expect(event_names.include? "allday").to eq true
-    end
-    it 'does not find recuring events' do
-      events = subject.find_events_simple (Date.new(2014, 07, 27))
-      expect(events.map(&:summary).include? "daily").to eq false
-    end
-  end
-
-  describe "#find_recuring_events" do
-    it 'can be called with timespan' do
-      events = subject.find_recuring_events(Date.new(2014, 07, 27), Date.new(2014, 07, 28))
-      expect(events.map(&:summary)).to eq ["daily", "daily"]
-    end
-    it 'finds normal recuring event.' do
-      events = subject.find_recuring_events (Date.new(2014, 07, 27))
-      expect(events.map(&:summary).include? "daily").to eq true
-    end
-  end
-
-  latejuly = Date.new(2014, 07, 27).freeze
-
-  describe "#find_events" do
-    it 'transitional: catches same events as events_in' do
-      events = subject.find_events latejuly
-      event_names = events.map(&:summary)
-      events2 = subject.events_in latejuly
-      expect(events2.values.flatten).to eq events.flatten
-    end
-    it 'finds events given date (like find_events_simple)' do
-      events = subject.find_events latejuly
-      event_names = events.map(&:summary)
-      expect(event_names.include? "onehour").to eq true
-      expect(event_names.include? "allday").to eq true
-    end
-    it 'handles whole day endtime correctly (ends next day)' do
-      events = subject.find_events (Date.new(2014, 07, 28))
-      event_names = events.map(&:summary)
-      expect(event_names.include? "allday").to eq false
-    end
-    it 'finds multiday events that cover the given date' do
-      events = subject.find_events latejuly
-      expect(events.map(&:summary).include? "multidays").to eq true
-    end
-    it 'finds recuring events' do
-      events = subject.find_events latejuly
-      expect(events.map(&:summary).include? "daily").to eq true
-    end
-    it 'wraps events as Event delegates' do
-      events = subject.find_events latejuly
-      events.each do |event|
-        expect(event.is_a? Kalindar::Event).to eq true
-      end
-    end
-    it 'finds events that reocur' do
-      events = subject.find_events (Date.new(2014, 07, 28))
-      event_names = events.map(&:summary)
-      expect(event_names.include? "daily").to eq true
-    end
-  end
 
   endjuly = Timespan.new(Date.new(2014, 07, 27), Date.new(2014, 07, 28)).freeze
 
+  latejuly = Date.new(2014, 07, 27).freeze
+
   describe "#events_in" do
+    it 'finds recurring events' do
+      events = subject.events_in (Date.new(2014, 07, 28))
+      event_names = events.values.flatten.map(&:summary)
+      expect(event_names.include? "daily").to eq true
+    end
+    it 'finds multiday events that cover the given date' do
+      events = subject.events_in latejuly
+      expect(events.values.flatten.map(&:summary).include? "multidays").to eq true
+    end
+    it 'handles whole day endtime correctly (ends next day)' do
+      events = subject.events_in (Date.new(2014, 07, 28))
+      event_names = events.values.flatten.map(&:summary)
+      expect(event_names.include? "allday").to eq false
+    end
+    it 'finds events given date (like find_events_simple)' do
+      events = subject.events_in latejuly
+      event_names = events.values.flatten.map(&:summary)
+      expect(event_names.include? "onehour").to eq true
+      expect(event_names.include? "allday").to eq true
+    end
+    it 'finds normal recuring event.' do
+      events = subject.events_in (Date.new(2014, 07, 27))
+      expect(events.values.flatten.map(&:summary).include? "daily").to eq true
+    end
     # multiday events should come up multiple times!
     it 'accesses events between two dates' do
       events = subject.events_in endjuly

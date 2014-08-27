@@ -69,6 +69,8 @@ describe EventCalendar do
     it 'wraps in Event Delegate' do
       events = subject.events_in endjuly
       expect(events.values.flatten.collect{|e| e.is_a? Kalindar::Event}.length).to eq events.values.flatten.length
+      expect(events.values.flatten[0].modifiable?).to eql true
+      expect(events.values.flatten[0].calendar.class).to eql Calendar
     end
   end
 
@@ -99,11 +101,21 @@ describe "Event" do
     cal = EventCalendar.new 'spec/testcal.ics'
     cal.find_by_uid("4a129461-cd74-4b3a-a307-faa1e8846cc2")
   }
+  subject(:daily_event) {
+    cal = EventCalendar.new 'spec/testcal.ics'
+    cal.find_by_uid("d7844d09-75d9-4a8b-a1de-453fe63d6415")
+  }
 
   describe "#start_time_f" do
     it "returns the time if given day is start day" do
       expect(events[0].start_time_f Date.new(2014, 8, 27)).to eq "12:00"
       expect(events[0].start_time_f Date.new(2014, 8, 28)).to eq "..."
+    end
+  end
+
+  describe "#modifiable?" do
+    it 'makes non-recuring events modifiable' do
+      expect(multiday_event.modifiable?).to eql false
     end
   end
 

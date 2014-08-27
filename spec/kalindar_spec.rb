@@ -27,7 +27,33 @@ describe EventCalendar do
 
   describe "#find_events_simple" do
     it 'finds events given date' do
-      events = subject.find_events (Date.new(2014, 07, 27))
+      events = subject.find_events_simple (Date.new(2014, 07, 27))
+      event_names = events.map(&:summary)
+      expect(event_names.include? "onehour").to eq true
+      expect(event_names.include? "allday").to eq true
+    end
+    it 'does not find recuring events' do
+      events = subject.find_events_simple (Date.new(2014, 07, 27))
+      expect(events.map(&:summary).include? "daily").to eq false
+    end
+  end
+
+  describe "#find_recuring_events" do
+    it 'can be called with timespan' do
+      events = subject.find_recuring_events(Date.new(2014, 07, 27), Date.new(2014, 07, 28))
+      expect(events.map(&:summary)).to eq ["daily", "daily"]
+    end
+    it 'finds normal recuring event.' do
+      events = subject.find_recuring_events (Date.new(2014, 07, 27))
+      expect(events.map(&:summary).include? "daily").to eq true
+    end
+  end
+
+  latejuly = Date.new(2014, 07, 27).freeze
+
+  describe "#find_events" do
+    it 'finds events given date (like find_events_simple)' do
+      events = subject.find_events latejuly
       event_names = events.map(&:summary)
       expect(event_names.include? "onehour").to eq true
       expect(event_names.include? "allday").to eq true
@@ -38,39 +64,43 @@ describe EventCalendar do
       expect(event_names.include? "allday").to eq false
     end
     it 'finds multiday events that cover the given date' do
-      events = subject.find_events (Date.new(2014, 07, 27))
+      events = subject.find_events latejuly
       expect(events.map(&:summary).include? "multidays").to eq true
     end
+    it 'finds recuring events' do
+      events = subject.find_events latejuly
+      expect(events.map(&:summary).include? "daily").to eq true
+    end
     it 'wraps events as Event delegates' do
-      events = subject.find_events (Date.new(2014, 07, 27))
+      events = subject.find_events latejuly
       events.each do |event|
-        expect(event.is_a? Event).to eq true
+        expect(event.is_a? Kalindar::Event).to eq true
       end
     end
+    it 'finds events that reocur' do
+      events = subject.find_events (Date.new(2014, 07, 28))
+      event_names = events.map(&:summary)
+      expect(event_names.include? "daily").to eq true
+    end
   end
 
-  it 'finds events that reocur' do
-    events = subject.find_events (Date.new(2014, 07, 28))
-    event_names = events.map(&:summary)
-    expect(event_names.include? "daily").to eq true
-  end
+  endjuly = Timespan.new(Date.new(2014, 07, 27), Date.new(2014, 07, 28)).freeze
 
   describe "#events_in" do
+    # multiday events should come up multiple times!
     it 'accesses events between two dates' do
-      events = subject.events_in(Date.new(2014, 07, 27), Date.new(2014, 07, 28))
-      event_names = events.map(&:summary)
-      expect(event_names).to eq ["allday", "onehour", "daily", "daily"]
+      events = subject.events_in endjuly
+      event_names = events.values.flatten.map(&:summary)
+      expect(event_names).to eq ["allday", "onehour", "multidays", "daily", "multidays", "daily"]
     end
     it '#events_in by day' do
-      events = subject.events_in(Date.new(2014, 7, 27), Date.new(2014, 7, 28))
-      event_names = events.map(&:summary)
-      expect(event_names).to eq ["allday", "onehour", "daily", "allday", "daily"]
-      expect(event_names.class).to eq({}.class)
+      events = subject.events_in endjuly
+      # And they come in a hash
+      expect(events.class).to eq({}.class)
     end
-    # multiday events!
     it 'wraps in Event Delegate' do
-      events = subject.events_in(Date.new(2014, 7, 27), Date.new(2014, 7, 28))
-      expect(events.collect{|e| e.is_a? Event}.length).to eq events.length
+      events = subject.events_in endjuly
+      expect(events.values.flatten.collect{|e| e.is_a? Kalindar::Event}.length).to eq events.values.flatten.length
     end
   end
 
@@ -81,16 +111,17 @@ describe EventCalendar do
     end
     it 'wraps in Event Delegate' do
       event = subject.find_by_uid 'cb523dc2-eab8-49c9-a99f-ed69ac3b65d0'
-      expect(event.is_a? Event).to eq true
+      expect(event.is_a? Kalindar::Event).to eq true
     end
   end
 end
 
 describe "Event" do
   subject(:allday_event) {}
+  # This tests the calendar, not the event class
   subject(:events) {
     cal = EventCalendar.new 'spec/testcal.ics'
-    cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28))
+    cal.events_in(Date.new(2014, 8, 27), Date.new(2014, 8, 28)).values.first
   }
   subject(:allday_event) {
     cal = EventCalendar.new 'spec/testcal.ics'

@@ -63,37 +63,39 @@ class KalindarApp < Sinatra::Base
   end
 
   get '/events/:year/:month' do
-    @events = {}
     # Events from start time to 31 days later
     date = Date.new(params[:year].to_i, params[:month].to_i, 1)
+
+    @events = $cal.events_in(date, date + 30)
+
+    # Pre-fill hash
     (date .. date + 30).each do |day|
-      #@events[d] = $cal.events_for(d)
-      @events[day] = $cal.find_events day.to_date
+      @events[day] ||= []
     end
+
     slim :event_list
   end
 
   get '/events' do
-    @events = {}
-    # events from today to in 30 days
+    # Events from today to in 30 days
+    @events = $cal.events_in(DateTime.now, DateTime.now + 30)
+
+    # Pre-fill hash
     (DateTime.now .. DateTime.now + 30).each do |day|
-      #@events[d] = $cal.events_for(d)
-      @events[day] = $cal.find_events day.to_date
+      @events[day] ||= []
     end
+
     slim :event_list
   end
 
   get '/events/twoday' do
-    @events = {}
     # events from today to in 30 days
-    (DateTime.now .. DateTime.now + 2).each do |day|
-      #@events[d] = $cal.events_for(d)
-      @events[day] = $cal.find_events day.to_date
-    end
+    @events[day] = $cal.events_in DateTime.now, DateTime.now + 2
     
     #@events = @events.values.flatten.sort_by {|e| e.start_time}
     @today = Date.today
     @tomorrow = @today + 1
+
     slim :twoday_list
   end
 

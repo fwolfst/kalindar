@@ -47,7 +47,7 @@ class EventCalendar
     events = @calendars.map &:events
     events.select {|event| event_includes? event, date}.flatten
     events.map {|event|
-      Event.new event
+      Kalindar::Event.new event
     }
   end
 
@@ -60,42 +60,115 @@ class EventCalendar
     map
   end
 
-  # Best optimization potential
-  def events_in start_date, end_date
-    events = []
-    (start_date .. end_date).each do |day|
-      events << find_events(day)
+  # start_date and end_date are inclusive,
+  # start_date can be Timespan, too
+  def events_in start_date, end_date=nil
+    if start_date.is_a? Timespan
+      timespan = start_date
+      end_date = start_date.finish
+      start_date = start_date.start
     end
-    events.flatten
+
+    # All overlapping occurences.
+    occurrences = events.map do |e|
+      e.occurrences(:overlapping => [start_date, end_date])
+    end
+
+    # Collect occurences by date.
+    hash = occurrences.inject({}) do |hsh, o|
+      o.each do |oc|
+        event = Kalindar::Event.new(oc)
+        (oc.dtstart.to_date .. oc.dtend.to_date).each do |day|
+          # Strip timerange and exclude one-and-whole-day events (they "end" next day).
+          if day >= start_date && day <= end_date && !(oc.dtstart != oc.dtend && oc.dtend.class == Date && oc.dtend == day)
+            (hsh[day] ||= []) << event
+          end
+        end
+      end
+      hsh
+    end
+    hash
   end
 
-  # Find (non-recuring) events that begin, end or cover the given day.
+  def find_recuring_events start_date, end_date=nil
+    # Make end_date end of start_date day if not given.
+    if end_date.nil?
+      end_date = DateTime.new(start_date.year, start_date.month, start_date.day, 23, 59)
+    end
+    recurings = events.select {|e| !e.rrule.empty?}
+    recurings.map do |event|
+      event.occurrences(:overlapping => [start_date, end_date])
+    end.flatten
+  end
+
+  # Find (recuring and non-recuring) events that begin, end or cover the given
+  # day.
   def find_events date
     #events = @calendars.map &:events
+    def starts_at? event, date
+      event.dtstart.to_date == date
+    end
+    def ends_at? event, date
+      event.dtend.to_date == date
+    end
+    def event_spans? event, date
+      event.dtstart < date && event.dtend > date
+    end
     @calendars.map do |calendar|
       calendar.events.select { |event|
         # If end-date is a Date (vs DateTime) let it be
         # All day/multiple day events
+        #next if event.rrule.empty?
         if event.dtstart.class == Date && event.dtend.class == Date
-          event.dtstart.to_date == date || (event.dtstart < date && event.dtend > date)
+          starts_at?(event, date) || event_spans?(event, date) || (!event.rrule.empty? && !event.occurrences(:overlapping => [date, date]).empty?)
         else
-          event.dtstart.to_date == date || event.dtend.to_date == date || (event.dtstart < date && event.dtend > date)
-          # occurrences need to be re-enabled
-          #||!event.occurrences(:overlapping => [date, date +1]).empty?
+          starts_at?(event, date) || ends_at?(event, date) || event_spans?(event, date) || (!event.rrule.empty? && !event.occurrences(:overlapping => [date, date +1]).empty?)
         end
       }
     end.flatten.map do |event|
-      Event.new event
+      Kalindar::Event.new event
     end
     # check flat_map enumerable method
+  end
+
+  # Find (non-recuring) events that begin, end or cover the given day.
+  def find_events_simple date
+    #events = @calendars.map &:events
+    def starts_at? event, date
+      event.dtstart.to_date == date
+    end
+    def ends_at? event, date
+      event.dtend.to_date == date
+    end
+    def event_spans? event, date
+      event.dtstart < date && event.dtend > date
+    end
+    @calendars.map do |calendar|
+      calendar.events.select { |event|
+        next if !event.rrule.empty?
+        # If end-date is a Date (vs DateTime) let it be
+        # All day/multiple day events
+        if event.dtstart.class == Date && event.dtend.class == Date
+          starts_at?(event, date) || event_spans?(event, date)
+        else
+          starts_at?(event, date) || ends_at?(event, date)
+        end
+      }
+    end.flatten.map do |event|
+      Kalindar::Event.new event
+    end
   end
 
   def find_by_uid uuid
     # we want to pick only the first! whats the method? detect is one, find another
     @calendars.map(&:events).flatten.each do |event|
-      return Event.new(event) if event.uid == uuid
+      return Kalindar::Event.new(event) if event.uid == uuid
     end
     nil
+  end
+
+  def events
+    @calendars.map(&:events).flatten
   end
 
   private
@@ -124,5 +197,3 @@ class EventCalendar
     incl
   end
 end
-
-

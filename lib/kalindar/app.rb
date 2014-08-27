@@ -154,6 +154,9 @@ class KalindarApp < Sinatra::Base
 
   # Edit/save an event.
   put '/event/edit/:uuid' do
+
+    # TODO: Make sure this is not an recuring event or in a not modifiable calendar.
+
     # validate_params
     if params[:submitbutton] == 'cancel'
       redirect '/'

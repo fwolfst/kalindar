@@ -4,6 +4,8 @@ Kalindar lets you view ics files via a webbrowser.
 
 It employs the ri_cal, sinatra, i18n ruby gems, the rightjs JavaScript framework and the Pure CSS framework.
 
+It shows recuring events and reloads on ics file changes.
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -32,7 +34,7 @@ Be careful.  Kalindar might destroy, change or delete your ics file(s)!
 
 Kalindar does not care about timezones!
 
-Kalindar gets confused by re-occuring events!
+Kalindar gets confused by re-occuring events, they are shown, but better do not modify.
 
 ### Configuration
 

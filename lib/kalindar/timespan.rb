@@ -3,9 +3,14 @@ require 'time'
 class Timespan
   attr_accessor :start
   attr_accessor :finish
+
   def initialize start, finish
     @start = start
     @finish = finish
+  end
+
+  def spans? date
+    @start <= date && @finish >= date
   end
 
   def self.from_day date

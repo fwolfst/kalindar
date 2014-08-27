@@ -147,3 +147,12 @@ describe "Event" do
     end
   end
 end
+
+describe Timespan do
+  describe "#spans?" do
+    it 'works with dates' do
+      today = Date.today
+      expect(Timespan.new(today, today + 4).spans? today + 3).to eql true
+    end
+  end
+end

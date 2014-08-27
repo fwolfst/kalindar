@@ -63,6 +63,11 @@ class EventCalendar
   # start_date and end_date are inclusive,
   # start_date can be Timespan, too
   def events_in start_date, end_date=nil
+    if end_date.nil? && !start_date.is_a?(Timespan)
+      timespan = Timespan.day_end start_date
+      end_date = timespan.finish
+      start_date = timespan.start
+    end
     if start_date.is_a? Timespan
       timespan = start_date
       end_date = start_date.finish

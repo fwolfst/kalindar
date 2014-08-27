@@ -52,6 +52,12 @@ describe EventCalendar do
   latejuly = Date.new(2014, 07, 27).freeze
 
   describe "#find_events" do
+    it 'transitional: catches same events as events_in' do
+      events = subject.find_events latejuly
+      event_names = events.map(&:summary)
+      events2 = subject.events_in latejuly
+      expect(events2.values.flatten).to eq events.flatten
+    end
     it 'finds events given date (like find_events_simple)' do
       events = subject.find_events latejuly
       event_names = events.map(&:summary)

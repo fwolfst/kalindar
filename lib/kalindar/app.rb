@@ -9,7 +9,7 @@ require 'listen'
 
 # Read in calendar files, fill global cal var.
 def cals
-  cal = EventCalendar.new($conf['calendar_files'])
+  EventCalendar.new($conf['calendar_files'])
 end
 
 

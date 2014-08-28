@@ -1,5 +1,6 @@
 ul.day_list
-  - @events.each do |day, evs|
+  - @events.keys.sort.each do |day|
+    - evs = @events[day]
     li class=li_day_class(day)
       .dayname
         | #{t(:"date.day.day_names")[day.wday-1]} #{l day, :format => :short}

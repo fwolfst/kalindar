@@ -106,7 +106,7 @@ class KalindarApp < Sinatra::Base
       slim :new_event, :locals => {'start_date' => Date.parse(params[:start_day])}
     end
     begin
-      event = Event.create_from_params params
+      event = Kalindar::Event.create_from_params params
     rescue Exception => e
       puts e.inspect
       puts e.backtrace
@@ -132,7 +132,7 @@ class KalindarApp < Sinatra::Base
   get '/event/new/:day' do
     # Aim is to get a new event in every case
     #@event = Event.create_from_params params
-    @event = Event.new(RiCal::Component::Event.new($cal.calendars.first))
+    @event = Kalindar::Event.new(RiCal::Component::Event.new($cal.calendars.first))
     @event.dtstart = Date.parse(params[:day])
     slim :new_event, :locals => {'start_date' => Date.parse(params[:day])}
   end

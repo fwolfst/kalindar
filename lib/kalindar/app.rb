@@ -117,10 +117,11 @@ class KalindarApp < Sinatra::Base
     $cal.calendars.first.write_back!
 
     if request.xhr?
-      @events = {}
       # Events from today to in 30 days
-      (DateTime.now .. DateTime.now + 30).each do |day|
-        @events[day] = $cal.find_events day.to_date
+      @events = $cal.events_in DateTime.now, DateTime.now + 30
+      # Pre-fill hash
+      (date .. date + 30).each do |day|
+        @events[day] ||= []
       end
       slim :event_list, :layout => false
     else
@@ -170,13 +171,13 @@ class KalindarApp < Sinatra::Base
 
   post '/events/full' do
     params[:calendars]
-    @events = {}
     # events from today to in 30 days
-    (DateTime.now .. DateTime.now + 30).each do |day|
-      #@events[d] = $cal.events_for(d)
-      # bring chosen calendars into equation
-      @events[day] = $cal.find_events day.to_date
+    @events = $cal.events_in DateTime.now .. DateTime.now + 30
+    # Pre-fill hash
+    (date .. date + 30).each do |day|
+      @events[day] ||= []
     end
+
     slim :event_list
   end
 end

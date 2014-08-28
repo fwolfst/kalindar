@@ -78,7 +78,7 @@ class KalindarApp < Sinatra::Base
 
   get '/events' do
     # Events from today to in 30 days
-    @events = $cal.events_in(DateTime.now, DateTime.now + 30)
+    @events = $cal.events_in(Date.today, Date.today + 30)
 
     # Pre-fill hash
     (DateTime.now .. DateTime.now + 30).each do |day|
@@ -90,7 +90,7 @@ class KalindarApp < Sinatra::Base
 
   get '/events/twoday' do
     # events from today to in 30 days
-    @events[day] = $cal.events_in DateTime.now, DateTime.now + 2
+    @events[day] = $cal.events_in Date.today, Date.today + 2
     
     #@events = @events.values.flatten.sort_by {|e| e.start_time}
     @today = Date.today
@@ -118,7 +118,8 @@ class KalindarApp < Sinatra::Base
 
     if request.xhr?
       # Events from today to in 30 days
-      @events = $cal.events_in DateTime.now, DateTime.now + 30
+      date = Date.today
+      @events = $cal.events_in date, date + 30
       # Pre-fill hash
       (date .. date + 30).each do |day|
         @events[day] ||= []
@@ -172,7 +173,8 @@ class KalindarApp < Sinatra::Base
   post '/events/full' do
     params[:calendars]
     # events from today to in 30 days
-    @events = $cal.events_in DateTime.now .. DateTime.now + 30
+   date = Date.today
+    @events = $cal.events_in date .. date + 30
     # Pre-fill hash
     (date .. date + 30).each do |day|
       @events[day] ||= []

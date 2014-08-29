@@ -58,6 +58,15 @@ class KalindarApp < Sinatra::Base
     end
   end
 
+  # Add empty list for each day in date to date + number_days,
+  # if no value set for given key
+  def register_days hash, date, number_days
+    (date.to_date .. (date.to_date + number_days)).each do |day|
+      hash[day] ||= []
+    end
+    hash
+  end
+
   get '/' do
     redirect '/events'
   end
@@ -68,10 +77,7 @@ class KalindarApp < Sinatra::Base
 
     @events = $cal.events_in(date, date + 30)
 
-    # Pre-fill hash
-    (date .. date + 30).each do |day|
-      @events[day] ||= []
-    end
+    register_days @events, date, 30
 
     slim :event_list
   end
@@ -80,10 +86,7 @@ class KalindarApp < Sinatra::Base
     # Events from today to in 30 days
     @events = $cal.events_in(Date.today, Date.today + 30)
 
-    # Pre-fill hash
-    (DateTime.now .. DateTime.now + 30).each do |day|
-      @events[day] ||= []
-    end
+    register_days @events, Date.today, 30
 
     slim :event_list
   end
@@ -120,10 +123,9 @@ class KalindarApp < Sinatra::Base
       # Events from today to in 30 days
       date = Date.today
       @events = $cal.events_in date, date + 30
-      # Pre-fill hash
-      (date .. date + 30).each do |day|
-        @events[day] ||= []
-      end
+
+      register_days @events, date, 30
+
       slim :event_list, :layout => false
     else
       redirect '/'
@@ -173,12 +175,10 @@ class KalindarApp < Sinatra::Base
   post '/events/full' do
     params[:calendars]
     # events from today to in 30 days
-   date = Date.today
+    date = Date.today
     @events = $cal.events_in date .. date + 30
-    # Pre-fill hash
-    (date .. date + 30).each do |day|
-      @events[day] ||= []
-    end
+
+    register_days @events, date, 30
 
     slim :event_list
   end

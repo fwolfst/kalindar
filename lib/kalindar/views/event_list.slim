@@ -4,8 +4,9 @@ ul.day_list
     li class=li_day_class(day)
       .dayname
         | #{t(:"date.day.day_names")[day.wday-1]} #{l day, :format => :short}
+        small
+          a#show_new_event_link href="/event/new/#{day.strftime('%Y%m%d')}" #{t 'create_event'}
       input#day_hidden_input type="hidden" name="day" value="#{day.strftime('%Y%m%d')}"
-      a#show_new_event_link href="/event/new/#{day.strftime('%Y%m%d')}" #{t 'create_event'}
       .new_event_mask style="display: none;"
       .hidden_new_event_mask
         == slim :new_event, :layout => false, :locals => {'start_date' => day.strftime("%Y%m%d")}
@@ -17,15 +18,14 @@ ul.day_list
                 | #{ev.time_f day}
                 - if ev.location && !ev.location.empty?
                   |  [#{ev.location}]
-              br
               #summary
-              | #{ev.summary}
-              - if ev.modifiable?
-                a#edit_event_link href="/event/edit/#{ev.uid}" = t 'edit'
+                | #{ev.summary}
+                - if ev.modifiable?
+                  a#edit_event_link href="/event/edit/#{ev.uid}" = t 'edit'
               #hidden_description
                 | (#{ev.from_to_f})
                 br
                 | #{ev.description}
-            hr(width="20%")
+            /hr(width="20%")
 #nav
 

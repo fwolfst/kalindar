@@ -11,7 +11,7 @@ ul.day_list
       .hidden_new_event_mask
         == slim :new_event, :layout => false, :locals => {'start_date' => day.strftime("%Y%m%d")}
       ul.event_list
-        - evs.each do |ev|
+        - evs.sort_by{|e|e.start_time}.each do |ev|
           li#event_day
             #event
               #time

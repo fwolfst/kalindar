@@ -6,6 +6,8 @@ It employs the ri_cal, sinatra, i18n ruby gems, the rightjs JavaScript framework
 
 It shows recuring events and reloads on ics file changes.
 
+Contact me if you need help!
+
 ## Installation
 
 Add this line to your application's Gemfile:
